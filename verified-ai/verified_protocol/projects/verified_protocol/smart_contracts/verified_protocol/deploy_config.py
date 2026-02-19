@@ -31,7 +31,7 @@ def deploy() -> None:
 
     # ── Client setup ─────────────────────────────────────────────────
     algorand = algokit_utils.AlgorandClient.from_environment()
-    algorand.set_default_validity_window(50)
+    algorand.set_default_validity_window(1000)
 
     deployer_ = algorand.account.from_environment("DEPLOYER")
     logger.info(f"Deployer address: {deployer_.address}")
@@ -42,7 +42,7 @@ def deploy() -> None:
 
     # ── Send params ──────────────────────────────────────────────────
     send_params = SendParams(
-        max_rounds_to_wait=50,
+        max_rounds_to_wait=1000,
         populate_app_call_resources=True,
     )
 
@@ -90,7 +90,7 @@ def deploy() -> None:
                         amount=algokit_utils.AlgoAmount(algo=1),
                         sender=deployer_.address,
                         receiver=app_client.app_address,
-                        validity_window=50,
+                        validity_window=1000,
                     ),
                     send_params=send_params,
                 )
