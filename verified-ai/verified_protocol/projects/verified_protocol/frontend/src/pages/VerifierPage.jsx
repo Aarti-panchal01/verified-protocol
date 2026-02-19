@@ -1,144 +1,168 @@
-import { useState } from 'react'
-import SkillTimeline from '../components/SkillTimeline.jsx'
+import { useState } from 'react';
+import ScoreCircle from '../components/ScoreCircle';
+import DomainChart from '../components/DomainChart';
+import Timeline from '../components/SkillTimeline';
 
-export default function VerifierPage({ apiBase }) {
-    const [wallet, setWallet] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [data, setData] = useState(null)
-    const [error, setError] = useState(null)
+const API = 'http://localhost:8000';
 
-    const handleVerify = async () => {
-        if (!wallet.trim()) return
-        setLoading(true)
-        setData(null)
-        setError(null)
+export default function VerifierPage() {
+    const [wallet, setWallet] = useState('');
+    const [result, setResult] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    async function handleVerify() {
+        setLoading(true);
+        setError('');
+        setResult(null);
 
         try {
-            const res = await fetch(`${apiBase}/verify/${wallet.trim()}`)
-            if (!res.ok) {
-                const d = await res.json().catch(() => ({}))
-                throw new Error(d.detail || `HTTP ${res.status}`)
-            }
-            const json = await res.json()
-            setData(json)
-        } catch (err) {
-            setError(err.message)
+            const res = await fetch(`${API}/verify/${wallet}`);
+            if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || 'Verification failed');
+            setResult(await res.json());
+        } catch (e) {
+            setError(e.message);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
     return (
-        <>
+        <div className="page">
             <div className="page-header">
-                <h1>Skill Verifier</h1>
-                <p>
-                    Verify any wallet's on-chain skill reputation. Records are
-                    cryptographically secured and immutable on Algorand.
+                <h1 className="page-title">Verifier Panel</h1>
+                <p className="page-subtitle">
+                    Recruiter & employer view. Look up any wallet to verify on-chain skill credentials with trust scoring.
                 </p>
             </div>
 
-            <div className="wallet-bar">
-                <input
-                    id="verify-wallet-input"
-                    className="form-input"
-                    type="text"
-                    placeholder="Paste wallet address to verify…"
-                    value={wallet}
-                    onChange={(e) => setWallet(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
-                />
-                <button
-                    id="verify-btn"
-                    className="btn btn-primary"
-                    onClick={handleVerify}
-                    disabled={loading || !wallet.trim()}
-                >
-                    {loading ? '⏳' : '🛡️'} Verify
-                </button>
+            {/* Wallet Input */}
+            <div className="card" style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <input
+                        id="verifier-wallet-input"
+                        className="form-input form-input-mono"
+                        placeholder="Enter wallet address to verify…"
+                        value={wallet}
+                        onChange={e => setWallet(e.target.value)}
+                        style={{ flex: 1 }}
+                    />
+                    <button
+                        id="verifier-btn"
+                        className={`btn btn-primary ${loading ? 'btn-loading' : ''}`}
+                        onClick={handleVerify}
+                        disabled={loading || !wallet}
+                    >
+                        {loading ? '' : '🔍 Verify'}
+                    </button>
+                </div>
+                {error && <div className="result-panel result-error" style={{ marginTop: '12px' }}>{error}</div>}
             </div>
 
-            {error && (
-                <div className="alert alert-error">
-                    <span>❌</span> {error}
-                </div>
-            )}
+            {result && (
+                <div className="animate-in">
+                    {/* Verification Hero */}
+                    <div className="verification-hero">
+                        <div className={`verification-icon ${result.verified ? 'verified' : 'unverified'}`}>
+                            {result.verified ? '✓' : '⚠'}
+                        </div>
+                        <h2 style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 700,
+                            color: result.verified ? 'var(--success)' : 'var(--warning)',
+                            marginBottom: '8px',
+                        }}>
+                            {result.verified ? 'Verified Talent' : 'Not Yet Verified'}
+                        </h2>
+                        <p style={{ color: 'var(--text-secondary)', maxWidth: 600, margin: '0 auto' }}>
+                            {result.message}
+                        </p>
+                    </div>
 
-            {loading && <div className="spinner" />}
-
-            {data && !loading && (
-                <>
-                    {/* Verification Badge */}
-                    <div className="card" style={{ marginBottom: '1.5rem' }}>
-                        <div className="verify-badge">
-                            <div className={`verify-icon ${data.verified ? 'verified' : 'unverified'}`}>
-                                {data.verified ? '✅' : '❌'}
-                            </div>
-                            <h2>{data.verified ? 'Wallet Verified' : 'Not Verified'}</h2>
-                            <p>{data.message}</p>
-
-                            {data.verified && (
-                                <div
-                                    className="stats-grid"
-                                    style={{ marginTop: '1.5rem', width: '100%', maxWidth: '400px' }}
-                                >
-                                    <div className="stat-card">
-                                        <div className="stat-value">{data.record_count}</div>
-                                        <div className="stat-label">On-Chain Records</div>
-                                    </div>
-                                    <div className="stat-card">
-                                        <div className="stat-value">
-                                            {data.records?.length
-                                                ? Math.round(
-                                                    data.records.reduce((s, r) => s + (r.score || 0), 0) /
-                                                    data.records.length
-                                                )
-                                                : 0}
-                                        </div>
-                                        <div className="stat-label">Avg Score</div>
+                    {result.reputation && (
+                        <>
+                            {/* Stats */}
+                            <div className="stats-grid">
+                                <div className="stat-card">
+                                    <div className="stat-value">{Math.round(result.reputation.total_reputation)}</div>
+                                    <div className="stat-label">Reputation</div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-value">{result.record_count}</div>
+                                    <div className="stat-label">Records</div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-value">{(result.reputation.trust_index * 100).toFixed(1)}%</div>
+                                    <div className="stat-label">Trust Index</div>
+                                    <div className="trust-meter">
+                                        <div className="trust-meter-fill" style={{ width: `${result.reputation.trust_index * 100}%` }} />
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Records */}
-                    {data.records?.length > 0 && (
-                        <div className="card">
-                            <div className="card-title">
-                                <span className="icon">📋</span> Verified Records
+                                <div className="stat-card">
+                                    <div className="stat-value" style={{
+                                        WebkitTextFillColor: 'unset',
+                                        color: result.verified ? 'var(--success)' : 'var(--warning)',
+                                        fontSize: '1.3rem',
+                                    }}>
+                                        {result.reputation.credibility_level}
+                                    </div>
+                                    <div className="stat-label">Credibility</div>
+                                </div>
                             </div>
-                            <SkillTimeline records={data.records} />
-                        </div>
+
+                            <div className="grid-2">
+                                {/* Domain Chart */}
+                                <div className="card">
+                                    <div className="card-header">
+                                        <div className="card-icon">📊</div>
+                                        <div>
+                                            <div className="card-title">Domain Breakdown</div>
+                                            <div className="card-description">Verified skill domains</div>
+                                        </div>
+                                    </div>
+                                    <DomainChart domainScores={result.reputation.domain_scores} />
+                                </div>
+
+                                {/* Proof Card */}
+                                <div className="card">
+                                    <div className="card-header">
+                                        <div className="card-icon">🔒</div>
+                                        <div>
+                                            <div className="card-title">Blockchain Proof</div>
+                                            <div className="card-description">On-chain verification details</div>
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: '0.85rem', lineHeight: '2' }}>
+                                        <div><span style={{ color: 'var(--text-muted)' }}>Network:</span> Algorand Testnet</div>
+                                        <div><span style={{ color: 'var(--text-muted)' }}>App ID:</span> <code style={{ color: 'var(--accent-2)' }}>755779875</code></div>
+                                        <div><span style={{ color: 'var(--text-muted)' }}>Wallet:</span> <code style={{ color: 'var(--accent-2)', fontSize: '0.75rem' }}>{wallet}</code></div>
+                                        <div><span style={{ color: 'var(--text-muted)' }}>Records:</span> {result.record_count}</div>
+                                        <div><span style={{ color: 'var(--text-muted)' }}>Badge:</span>{' '}
+                                            <span className={`verification-badge ${result.verified ? 'verified' : 'unverified'}`} style={{ fontSize: '0.75rem' }}>
+                                                {result.verified ? '✓ Eligible' : '◯ Pending'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
                     )}
 
-                    {/* Wallet meta */}
-                    <div className="card" style={{ marginTop: '1.5rem' }}>
-                        <div className="card-title">
-                            <span className="icon">🔗</span> Blockchain Proof
+                    {/* Records Timeline */}
+                    {result.records?.length > 0 && (
+                        <div className="card" style={{ marginTop: '24px' }}>
+                            <div className="card-header">
+                                <div className="card-icon">📜</div>
+                                <div>
+                                    <div className="card-title">On-Chain Records</div>
+                                    <div className="card-description">Immutable skill attestations</div>
+                                </div>
+                            </div>
+                            <Timeline records={result.records} />
                         </div>
-                        <dl className="record-meta">
-                            <dt>Wallet</dt>
-                            <dd style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>{data.wallet}</dd>
-                            <dt>Network</dt>
-                            <dd>Algorand Testnet</dd>
-                            <dt>App ID</dt>
-                            <dd>
-                                <a
-                                    className="tx-link"
-                                    href="https://testnet.explorer.perawallet.app/application/755779875"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    755779875
-                                </a>
-                            </dd>
-                            <dt>Storage</dt>
-                            <dd>Box Storage (per wallet)</dd>
-                        </dl>
-                    </div>
-                </>
+                    )}
+                </div>
             )}
-        </>
-    )
+        </div>
+    );
 }

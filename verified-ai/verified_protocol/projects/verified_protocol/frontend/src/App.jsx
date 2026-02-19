@@ -1,25 +1,20 @@
-import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar.jsx'
-import SubmitPage from './pages/SubmitPage.jsx'
-import RecordsPage from './pages/RecordsPage.jsx'
-import VerifierPage from './pages/VerifierPage.jsx'
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import SubmitPage from './pages/SubmitPage';
+import DashboardPage from './pages/RecordsPage';
+import VerifierPage from './pages/VerifierPage';
+import ExplorerPage from './pages/ExplorerPage';
 
-const API_BASE = 'http://localhost:8000'
-
-function App() {
+export default function App() {
   return (
     <>
-      <div className="bg-orbs" />
       <Navbar />
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={<SubmitPage apiBase={API_BASE} />} />
-          <Route path="/records" element={<RecordsPage apiBase={API_BASE} />} />
-          <Route path="/verify" element={<VerifierPage apiBase={API_BASE} />} />
-        </Routes>
-      </main>
+      <Routes>
+        <Route path="/" element={<SubmitPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/verifier" element={<VerifierPage />} />
+        <Route path="/explorer" element={<ExplorerPage />} />
+      </Routes>
     </>
-  )
+  );
 }
-
-export default App

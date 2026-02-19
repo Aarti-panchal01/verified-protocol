@@ -174,7 +174,8 @@ def read_records(wallet_address: str) -> list[dict]:
                 args=GetSkillRecordsArgs(wallet=wallet_address),
                 send_params=send_params,
             )
-            raw_bytes: bytes = raw_result.abi_return  # type: ignore[assignment]
+            raw_return = raw_result.abi_return
+            raw_bytes = bytes(raw_return) if not isinstance(raw_return, bytes) else raw_return
             break
         except Exception as exc:
             if attempt < MAX_RETRIES:

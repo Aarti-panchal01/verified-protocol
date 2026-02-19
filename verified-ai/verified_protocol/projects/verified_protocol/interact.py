@@ -316,7 +316,8 @@ def verify_skill_record(skill_id: str) -> None:
                 args=GetSkillRecordsArgs(wallet=deployer_addr),
                 send_params=send_params,
             )
-            raw_bytes: bytes = raw_result.abi_return  # type: ignore[assignment]
+            raw_return = raw_result.abi_return
+            raw_bytes = bytes(raw_return) if not isinstance(raw_return, bytes) else raw_return
             break
         except Exception as exc:
             if _is_retriable(exc) and attempt < MAX_RETRIES:

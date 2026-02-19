@@ -1,37 +1,21 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom';
 
 export default function Navbar() {
     return (
         <nav className="navbar">
-            <div className="navbar-inner">
-                <NavLink to="/" className="navbar-brand">
-                    <span className="brand-icon">🛡️</span>
-                    <span>Verified Protocol</span>
-                </NavLink>
+            <NavLink to="/" className="navbar-brand">
+                <span className="navbar-brand-icon">⬡</span>
+                Verified Protocol
+            </NavLink>
 
-                <ul className="navbar-links">
-                    <li>
-                        <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''} end>
-                            Submit
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/records" className={({ isActive }) => isActive ? 'active' : ''}>
-                            Records
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/verify" className={({ isActive }) => isActive ? 'active' : ''}>
-                            Verifier
-                        </NavLink>
-                    </li>
-                </ul>
+            <ul className="navbar-links">
+                <li><NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>Submit</NavLink></li>
+                <li><NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>Dashboard</NavLink></li>
+                <li><NavLink to="/verifier" className={({ isActive }) => isActive ? 'active' : ''}>Verifier</NavLink></li>
+                <li><NavLink to="/explorer" className={({ isActive }) => isActive ? 'active' : ''}>Explorer</NavLink></li>
+            </ul>
 
-                <div className="navbar-badge">
-                    <span className="dot" />
-                    Testnet
-                </div>
-            </div>
+            <span className="navbar-badge">Testnet</span>
         </nav>
-    )
+    );
 }
