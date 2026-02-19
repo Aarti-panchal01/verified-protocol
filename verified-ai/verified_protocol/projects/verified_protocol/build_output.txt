@@ -1,0 +1,34 @@
+﻿poetry : 2026-02-19 17:39:53,985 INFO      : Loading .env
+At line:1 char:1
++ poetry run python -m smart_contracts build 
+verified_protocol 2>&1 | O ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026-02-19  
+   17:3... : Loading .env:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026-02-19 17:39:53,988 INFO      : Building app at 
+C:\Users\Aarti Panchal\verified-ai\verified_protocol\proj
+ects\verified_protocol\smart_contracts\verified_protocol\
+contract.py
+2026-02-19 17:39:53,989 INFO      : Exporting 
+C:\Users\Aarti Panchal\verified-ai\verified_protocol\proj
+ects\verified_protocol\smart_contracts\verified_protocol\
+contract.py to C:\Users\Aarti Panchal\verified-ai\verifie
+d_protocol\projects\verified_protocol\smart_contracts\art
+ifacts\verified_protocol
+info: using puyapy version 5.7.1
+info: using python search path: ['C:\\Users\\Aarti Panchal\\AppData\\Local\\Programs\\Python\\Python313\\python313.zip', 'C:\\Users\\Aarti Panchal\\AppData\\Local\\Programs\\Python\\Python313\\DLLs', 'C:\\Users\\Aarti Panchal\\AppData\\Local\\Programs\\Python\\Python313', 'C:\\Users\\Aarti Panchal\\verified-ai\\verified_protocol\\projects\\verified_protocol\\.venv', 'C:\\Users\\Aarti Panchal\\verified-ai\\verified_protocol\\projects\\verified_protocol\\.venv\\Lib\\site-packages']
+info: Writing smart_contracts/artifacts/verified_protocol/VerifiedProtocol.arc56.json
+info: Writing smart_contracts/artifacts/verified_protocol/VerifiedProtocol.approval.teal
+info: Writing smart_contracts/artifacts/verified_protocol/VerifiedProtocol.clear.teal
+info: Writing smart_contracts/artifacts/verified_protocol/VerifiedProtocol.approval.puya.map
+info: Writing smart_contracts/artifacts/verified_protocol/VerifiedProtocol.clear.puya.map
+
+
+VerifiedProtocol.arc56.json
+Generating Python client code for application specified in C:\Users\Aarti Panchal\verified-ai\verified_protocol\projects\verified_protocol\smart_contracts\artifacts\verified_protocol\VerifiedProtocol.arc56.json and writing to C:\Users\Aarti Panchal\verified-ai\verified_protocol\projects\verified_protocol\smart_contracts\artifacts\verified_protocol\verified_protocol_client.py
+Output typed client for VerifiedProtocol to C:\Users\Aarti Panchal\verified-ai\verified_protocol\projects\verified_protocol\smart_contracts\artifacts\verified_protocol\verified_protocol_client.py
+
+

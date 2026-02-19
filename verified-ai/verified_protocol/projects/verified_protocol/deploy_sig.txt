@@ -1,0 +1,11 @@
+﻿self: self
+on_update: on_update: algokit_utils.applications.enums.OnUpdate | None = None
+on_schema_break: on_schema_break: algokit_utils.applications.enums.OnSchemaBreak | None = None
+create_params: create_params: smart_contracts.artifacts.verified_protocol.verified_protocol_client.VerifiedProtocolBareCallCreateParams | None = None
+update_params: update_params: None = None
+delete_params: delete_params: None = None
+existing_deployments: existing_deployments: algokit_utils.applications.app_deployer.ApplicationLookup | None = None
+ignore_cache: ignore_cache: bool = False
+app_name: app_name: str | None = None
+compilation_params: compilation_params: algokit_utils.applications.app_client.AppClientCompilationParams | None = None
+send_params: send_params: algokit_utils.models.transaction.SendParams | None = None

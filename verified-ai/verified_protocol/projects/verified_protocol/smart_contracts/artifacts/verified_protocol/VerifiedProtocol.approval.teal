@@ -1,0 +1,331 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 2 1 8
+    bytecblock 0x151f7c75 0x
+    // smart_contracts/verified_protocol/contract.py:73-76
+    // # ---------------------------------------------------------------------------
+    // # Contract
+    // # ---------------------------------------------------------------------------
+    // class VerifiedProtocol(ARC4Contract):
+    txn NumAppArgs
+    bz main___algopy_default_create@10
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0x5d668183 0xe632139d 0x6fa5005c // method "submit_skill_record(string,string,uint64,string,uint64)void", method "get_skill_records(address)byte[]", method "get_record_count(address)uint64"
+    txna ApplicationArgs 0
+    match submit_skill_record get_skill_records get_record_count
+    err
+
+main___algopy_default_create@10:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// smart_contracts.verified_protocol.contract.VerifiedProtocol.submit_skill_record[routing]() -> void:
+submit_skill_record:
+    // smart_contracts/verified_protocol/contract.py:91-92
+    // # ── Write ─────────────────────────────────────────────────────────
+    // @abimethod()
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    dup
+    uncover 2
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    dup
+    uncover 2
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    txna ApplicationArgs 3
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    txna ApplicationArgs 4
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_1 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    txna ApplicationArgs 5
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    // smart_contracts/verified_protocol/contract.py:109-116
+    // # 1. Build the ARC-4 encoded record
+    // record = SkillRecord(
+    //     mode=mode,
+    //     domain=domain,
+    //     score=score,
+    //     artifact_hash=artifact_hash,
+    //     timestamp=timestamp,
+    // )
+    pushint 22
+    uncover 6
+    +
+    dup
+    itob
+    extract 6 2
+    pushbytes 0x0016
+    swap
+    concat
+    swap
+    uncover 5
+    +
+    swap
+    uncover 4
+    concat
+    swap
+    itob
+    extract 6 2
+    concat
+    swap
+    concat
+    uncover 3
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    // smart_contracts/verified_protocol/contract.py:119-120
+    // # 2. Build the length-prefixed payload: [2-byte len][record bytes]
+    // record_len = record_bytes.length
+    dup
+    len
+    // smart_contracts/verified_protocol/contract.py:63
+    // return op.extract(op.itob(value), 6, 2)
+    itob
+    extract 6 2
+    // smart_contracts/verified_protocol/contract.py:121
+    // payload = _uint16_to_bytes(record_len) + record_bytes
+    swap
+    concat
+    // smart_contracts/verified_protocol/contract.py:123-124
+    // # 3. Sender key (raw 32-byte address)
+    // sender_key = Txn.sender.bytes
+    txn Sender
+    dup
+    cover 2
+    // smart_contracts/verified_protocol/contract.py:126-127
+    // # 4. Safe box handling — check existence first
+    // _existing_data, box_exists = op.Box.get(sender_key)
+    box_len
+    bury 1
+    // smart_contracts/verified_protocol/contract.py:129
+    // if box_exists:
+    bz submit_skill_record_else_body@3
+    // smart_contracts/verified_protocol/contract.py:130-131
+    // # Box already exists — compute current size and resize + append.
+    // current_length = op.Box.length(sender_key)[0]
+    swap
+    dup
+    box_len
+    pop
+    // smart_contracts/verified_protocol/contract.py:132
+    // payload_length = payload.length
+    dig 2
+    len
+    // smart_contracts/verified_protocol/contract.py:133
+    // new_total = current_length + payload_length
+    dig 1
+    +
+    // smart_contracts/verified_protocol/contract.py:135-136
+    // # Resize the box to accommodate the new record
+    // op.Box.resize(sender_key, new_total)
+    dig 2
+    swap
+    box_resize
+    // smart_contracts/verified_protocol/contract.py:137-138
+    // # Write the new payload at the old end offset
+    // op.Box.replace(sender_key, current_length, payload)
+    uncover 2
+    box_replace
+
+submit_skill_record_after_if_else@4:
+    // smart_contracts/verified_protocol/contract.py:91-92
+    // # ── Write ─────────────────────────────────────────────────────────
+    // @abimethod()
+    intc_2 // 1
+    return
+
+submit_skill_record_else_body@3:
+    // smart_contracts/verified_protocol/contract.py:140-141
+    // # Box does not exist — create with the initial payload via put.
+    // op.Box.put(sender_key, payload)
+    box_put
+    b submit_skill_record_after_if_else@4
+
+
+// smart_contracts.verified_protocol.contract.VerifiedProtocol.get_skill_records[routing]() -> void:
+get_skill_records:
+    // smart_contracts/verified_protocol/contract.py:143-144
+    // # ── Read ──────────────────────────────────────────────────────────
+    // @abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/verified_protocol/contract.py:154
+    // box_data, box_exists = op.Box.get(wallet.bytes)
+    box_get
+    // smart_contracts/verified_protocol/contract.py:155
+    // if box_exists:
+    bz get_skill_records_after_if_else@3
+    dup
+
+get_skill_records_after_inlined_smart_contracts.verified_protocol.contract.VerifiedProtocol.get_skill_records@4:
+    // smart_contracts/verified_protocol/contract.py:143-144
+    // # ── Read ──────────────────────────────────────────────────────────
+    // @abimethod(readonly=True)
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_0 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+get_skill_records_after_if_else@3:
+    // smart_contracts/verified_protocol/contract.py:157
+    // return Bytes(b"")
+    bytec_1 // 0x
+    // smart_contracts/verified_protocol/contract.py:143-144
+    // # ── Read ──────────────────────────────────────────────────────────
+    // @abimethod(readonly=True)
+    b get_skill_records_after_inlined_smart_contracts.verified_protocol.contract.VerifiedProtocol.get_skill_records@4
+
+
+// smart_contracts.verified_protocol.contract.VerifiedProtocol.get_record_count[routing]() -> void:
+get_record_count:
+    bytec_1 // ""
+    dupn 2
+    // smart_contracts/verified_protocol/contract.py:159-160
+    // # ── Utility ───────────────────────────────────────────────────────
+    // @abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/verified_protocol/contract.py:167
+    // box_data, box_exists = op.Box.get(wallet.bytes)
+    box_get
+    // smart_contracts/verified_protocol/contract.py:168
+    // if not box_exists:
+    bnz get_record_count_after_if_else@3
+    // smart_contracts/verified_protocol/contract.py:169
+    // return UInt64(0)
+    intc_0 // 0
+
+get_record_count_after_inlined_smart_contracts.verified_protocol.contract.VerifiedProtocol.get_record_count@7:
+    // smart_contracts/verified_protocol/contract.py:159-160
+    // # ── Utility ───────────────────────────────────────────────────────
+    // @abimethod(readonly=True)
+    itob
+    bytec_0 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_2 // 1
+    return
+
+get_record_count_after_if_else@3:
+    // smart_contracts/verified_protocol/contract.py:171
+    // count = UInt64(0)
+    intc_0 // 0
+    bury 4
+    // smart_contracts/verified_protocol/contract.py:172
+    // offset = UInt64(0)
+    intc_0 // 0
+    bury 2
+    // smart_contracts/verified_protocol/contract.py:173
+    // data_len = box_data.length
+    dup
+    len
+    bury 3
+
+get_record_count_while_top@4:
+    // smart_contracts/verified_protocol/contract.py:175
+    // while offset < data_len:
+    dig 1
+    dig 3
+    <
+    bz get_record_count_after_while@6
+    // smart_contracts/verified_protocol/contract.py:176-177
+    // # Read the 2-byte length prefix
+    // record_len = _bytes_to_uint16(op.extract(box_data, offset, 2))
+    dup
+    dig 2
+    dup
+    cover 2
+    intc_1 // 2
+    extract3
+    // smart_contracts/verified_protocol/contract.py:69-70
+    // # Pad to 8 bytes so btoi works correctly.
+    // return op.btoi(op.bzero(6) + raw)
+    pushint 6
+    bzero
+    swap
+    concat
+    btoi
+    // smart_contracts/verified_protocol/contract.py:178-179
+    // # Advance past the prefix + record body
+    // offset = offset + UInt64(2) + record_len
+    swap
+    intc_1 // 2
+    +
+    +
+    bury 2
+    // smart_contracts/verified_protocol/contract.py:180
+    // count = count + UInt64(1)
+    dig 3
+    intc_2 // 1
+    +
+    bury 4
+    b get_record_count_while_top@4
+
+get_record_count_after_while@6:
+    dig 3
+    // smart_contracts/verified_protocol/contract.py:159-160
+    // # ── Utility ───────────────────────────────────────────────────────
+    // @abimethod(readonly=True)
+    b get_record_count_after_inlined_smart_contracts.verified_protocol.contract.VerifiedProtocol.get_record_count@7
